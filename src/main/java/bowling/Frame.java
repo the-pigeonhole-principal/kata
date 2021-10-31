@@ -12,7 +12,6 @@ public class Frame {
     private boolean isOver = false;
     private int rollOnePins = 0;
     private int rollTwoPins = 0;
-    private int rollThreePins = 0;
     private FrameType frameType = FrameType.NORMAL;
     private int score = 0;
 
@@ -94,8 +93,7 @@ public class Frame {
                     }
                     break;
                 case 3:
-                    rollThreePins = numberOfPinsKnockedDown;
-                    score += rollThreePins;
+                    score += numberOfPinsKnockedDown;
                     this.isOver = true;
                     break;
             }
@@ -114,6 +112,8 @@ public class Frame {
     }
 
     public void addBonus(int bonusPoints) {
-        this.score += bonusPoints;
+        if (!isFinalFrame) {
+            this.score += bonusPoints;
+        }
     }
 }

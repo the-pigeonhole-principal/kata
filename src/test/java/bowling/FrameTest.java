@@ -10,7 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class FrameTest {
     @Test
-    public void nonFinalFrameHasTwoRolls() throws BowlingException {
+    public void normalFrameHasTwoRolls() throws BowlingException {
         Frame frame = new Frame(false);
 
         frame.roll(1);
@@ -21,7 +21,7 @@ public class FrameTest {
     }
 
     @Test
-    public void nonFinalNormalFrameScore() throws BowlingException {
+    public void normalFrameScore() throws BowlingException {
         Frame frame = new Frame();
 
         frame.roll(1);
@@ -31,7 +31,7 @@ public class FrameTest {
     }
 
     @Test
-    public void finalNormalFrameHasTwoRolls() throws BowlingException {
+    public void finalFrameHasTwoRollsIfItsNotAStrikeOrSpare() throws BowlingException {
         Frame frame = new Frame(true);
 
         frame.roll(1);
@@ -42,7 +42,7 @@ public class FrameTest {
     }
 
     @Test
-    public void nonFinalStrikeFrameHasOneRoll() throws BowlingException {
+    public void strikeFrameHasOneRoll() throws BowlingException {
         Frame frame = new Frame();
 
         frame.roll(10);
@@ -50,7 +50,7 @@ public class FrameTest {
     }
 
     @Test
-    public void normalFrame() throws BowlingException {
+    public void normalFrameIsCorrectlyIdentified() throws BowlingException {
         Frame frame = new Frame();
         frame.roll(1);
         frame.roll(1);
@@ -58,7 +58,7 @@ public class FrameTest {
     }
 
     @Test
-    public void spareFrame() throws BowlingException {
+    public void spareFrameIsCorrectlyIdentified() throws BowlingException {
         Frame frame = new Frame();
         frame.roll(1);
         frame.roll(9);
@@ -66,27 +66,34 @@ public class FrameTest {
     }
 
     @Test
-    public void strikeFrame() throws BowlingException {
+    public void strikeFrameIsCorrectlyIdentified() throws BowlingException {
         Frame frame = new Frame();
         frame.roll(10);
         assertThat(frame.getFrameType(), is(FrameType.STRIKE));
     }
 
     @Test
-    public void nonFinalStrikeFrameEndsAfterOneRoll() throws BowlingException {
-        Frame frame = new Frame();
-        frame.roll(10);
-        assertThat(frame.isOver(), is(true));
-    }
-
-    @Test
-    public void finalStrikeFrameEndsAfterThreeRolls() throws BowlingException {
+    public void finalFrameHasThreeRollsForAStrike() throws BowlingException {
         Frame frame = new Frame(true);
 
         frame.roll(10);
         assertThat(frame.isOver(), is(false));
 
         frame.roll(1);
+        assertThat(frame.isOver(), is(false));
+
+        frame.roll(1);
+        assertThat(frame.isOver(), is(true));
+    }
+
+    @Test
+    public void finalFrameHasThreeRollsForASpare() throws BowlingException {
+        Frame frame = new Frame(true);
+
+        frame.roll(7);
+        assertThat(frame.isOver(), is(false));
+
+        frame.roll(3);
         assertThat(frame.isOver(), is(false));
 
         frame.roll(1);
@@ -126,7 +133,7 @@ public class FrameTest {
     }
 
     @Test
-    public void nonFinalFrameBonusIsApplied() throws BowlingException {
+    public void bonusIsApplied() throws BowlingException {
         Frame frame = new Frame();
         frame.roll(10);
         frame.addBonus(3);
@@ -134,10 +141,20 @@ public class FrameTest {
         assertThat(frame.score(), is(10+3+4));
     }
 
+    @Test
+    public void bonusIsNotAppliedOnFinalFrame() throws BowlingException {
+        Frame frame = new Frame(true);
+        frame.roll(10);
+        frame.addBonus(3);
+        frame.addBonus(4);
+        assertThat(frame.score(), is(10));
+    }
+
     @Test(expected = FrameOverException.class)
-    public void frameIsNotRolledWhenOver() throws BowlingException {
+    public void rollingThrowsExceptionWhenFrameIsOver() throws BowlingException {
         Frame frame = new Frame();
         frame.roll(10);
+        assertThat(frame.isOver(), is(true));
         frame.roll(1);
     }
 
